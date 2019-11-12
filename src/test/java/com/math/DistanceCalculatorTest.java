@@ -4,6 +4,7 @@ import com.math.calculation.DistanceCalculator;
 import com.math.data.DistanceMatrix;
 import com.math.data.Point;
 import com.math.data.PointsWrapper;
+import com.math.scheduling.TestScheduler;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,7 +23,7 @@ public class DistanceCalculatorTest {
     public void calculationTest() {
 
         PointsWrapper pointsWrapper = new PointsWrapper(getPoints());
-        DistanceCalculator calculator = new DistanceCalculator();
+        DistanceCalculator calculator = new DistanceCalculator(new TestScheduler());
         for (int numOfThreads = 1; numOfThreads < 10; numOfThreads++) {
             DistanceMatrix result = calculator.calculateDistances(pointsWrapper, numOfThreads);
             Assert.assertArrayEquals("Should be the same", new double[]{0, 5, 10, 15}, result.getDistances(0), 0.0001);
@@ -43,10 +44,9 @@ public class DistanceCalculatorTest {
     @Test
     public void zeroThreadsTest() {
         PointsWrapper pointsWrapper = new PointsWrapper(getPoints());
-        DistanceCalculator calculator = new DistanceCalculator();
+        DistanceCalculator calculator = new DistanceCalculator(new TestScheduler());
         thrown.expect(RuntimeException.class);
         calculator.calculateDistances(pointsWrapper, 0);
-
     }
 
     private static List<Point> getPoints() {

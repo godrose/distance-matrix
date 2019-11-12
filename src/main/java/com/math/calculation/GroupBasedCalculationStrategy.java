@@ -1,36 +1,38 @@
 package com.math.calculation;
 
-import com.math.data.PointsWrapper;
 import com.math.data.DataWrapper;
 import com.math.data.DistanceMatrix;
-import com.math.infra.DistanceGroupCallableImpl;
+import com.math.data.PointsWrapper;
+import com.math.infra.DistanceGroupRunnableImpl;
+import com.math.scheduling.Scheduler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class GroupBasedCalculationStrategy implements CalculationStrategy {
     private int numberOfThreads;
+    private Scheduler scheduler;
 
-    public GroupBasedCalculationStrategy(int numberOfThreads) {
+    public GroupBasedCalculationStrategy(int numberOfThreads, Scheduler scheduler) {
         this.numberOfThreads = numberOfThreads;
+        this.scheduler = scheduler;
     }
 
     public void calculateDistances(PointsWrapper pointsWrapper, DistanceMatrix matrix) {
-        ExecutorService executor = Executors.newFixedThreadPool(this.numberOfThreads);
-        List<Callable<String>> tasks = new ArrayList<Callable<String>>();
+        List<Thread> threads = new ArrayList<Thread>();
         for (int i = 0; i < this.numberOfThreads; i++) {
-            Callable<String> worker = new DistanceGroupCallableImpl(new DataWrapper(i, pointsWrapper, matrix, this.numberOfThreads));
-            tasks.add(worker);
+            Thread thread = new Thread(new DistanceGroupRunnableImpl(new DataWrapper(i, pointsWrapper, matrix, this.numberOfThreads, this.scheduler)));
+            threads.add(thread);
+            thread.start();
         }
-        try {
-            executor.invokeAll(tasks);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            executor.shutdown();
+
+        for (Thread thread :
+                threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException ex) {
+
+            }
         }
     }
 }

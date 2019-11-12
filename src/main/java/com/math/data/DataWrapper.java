@@ -1,16 +1,20 @@
 package com.math.data;
 
+import com.math.scheduling.Scheduler;
+
 public class DataWrapper {
     private int groupIndex;
     private PointsWrapper pointsWrapper;
     private DistanceMatrix matrix;
     private int numberOfGroups;
+    private Scheduler scheduler;
 
-    public DataWrapper(int index, PointsWrapper pointsWrapper, DistanceMatrix matrix, int numberOfGroups) {
+    public DataWrapper(int index, PointsWrapper pointsWrapper, DistanceMatrix matrix, int numberOfGroups, Scheduler scheduler) {
         this.groupIndex = index;
         this.pointsWrapper = pointsWrapper;
         this.matrix = matrix;
         this.numberOfGroups = numberOfGroups;
+        this.scheduler = scheduler;
     }
 
     public int getGroupIndex() {
@@ -27,5 +31,9 @@ public class DataWrapper {
 
     public int getNumberOfGroups() {
         return numberOfGroups;
+    }
+
+    public Scheduler getScheduler() {
+        return scheduler;
     }
 }
